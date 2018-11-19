@@ -72,21 +72,48 @@ def region_of_interest(image):
     masked_image = cv2.bitwise_and(image, mask)
     return masked_image
 
-image = cv2.imread('test_image.jpg')
 
-## Make gray copy to not edit original
-lane_image = np.copy(image)
-canny_image = canny(lane_image)
-cropped_image = region_of_interest(canny_image)
+########## Image ##########
+# image = cv2.imread('test_image.jpg')
+# 
+# ## Make gray copy to not edit original
+# lane_image = np.copy(image)
+# canny_image = canny(lane_image)
+# cropped_image = region_of_interest(canny_image)
+# 
+# ## Detect lines in canny image
+# lines = cv2.HoughLinesP(cropped_image, 2, np.pi/180, 100, np.array([]), minLineLength=40, maxLineGap=5)
+# averaged_lines = average_slope_intercept(lane_image, lines)
+# 
+# line_image = display_lines(lane_image, averaged_lines)
+# 
+# ## Put lines over lane image, weighted for clarity
+# combo_image = cv2.addWeighted(lane_image, 0.8, line_image, 1, 1)
+# 
+# cv2.imshow("result", combo_image)
+# cv2.waitKey(0)
 
-## Detect lines in canny image
-lines = cv2.HoughLinesP(cropped_image, 2, np.pi/180, 100, np.array([]), minLineLength=40, maxLineGap=5)
-averaged_lines = average_slope_intercept(lane_image, lines)
+########## Video ##########
+cap = cv2.VideoCapture("test2.mp4")
+while(cap.isOpened()):
+    _, frame = cap.read()
 
-line_image = display_lines(lane_image, averaged_lines)
+    canny_image = canny(frame)
+    cropped_image = region_of_interest(canny_image)
+    
+    ## Detect lines in canny image
+    lines = cv2.HoughLinesP(cropped_image, 2, np.pi/180, 100, np.array([]), minLineLength=40, maxLineGap=5)
+    averaged_lines = average_slope_intercept(frame, lines)
+    
+    line_image = display_lines(frame, averaged_lines)
+    
+    ## Put lines over lane image, weighted for clarity
+    combo_image = cv2.addWeighted(frame, 0.8, line_image, 1, 1)
+    
+    cv2.imshow("result", combo_image)
+    if cv2.waitKey(1) & 0xFF == ord('q'):
+        break
 
-## Put lines over lane image, weighted for clarity
-combo_image = cv2.addWeighted(lane_image, 0.8, line_image, 1, 1)
-
-cv2.imshow("result", combo_image)
-cv2.waitKey(0)
+cap.release()
+cv2.destroyAllWindows()
+    

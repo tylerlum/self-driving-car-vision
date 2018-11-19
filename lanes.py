@@ -10,5 +10,8 @@ gray = cv2.cvtColor(lane_image, cv2.COLOR_RGB2GRAY)
 ## Use Gaussian blur method
 blur = cv2.GaussianBlur(gray, (5,5), 0)
 
-cv2.imshow('result', blur)
+## Make lines showing gradient
+canny = cv2.Canny(blur, 50, 150)
+
+cv2.imshow('result', canny)
 cv2.waitKey(0)
